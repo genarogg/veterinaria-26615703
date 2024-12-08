@@ -1,0 +1,83 @@
+
+
+<section class="section-nueve">
+
+    <h2 class="section-nueve-titulo">Formulario de Contacto</h2>
+    <form class="formulario-contacto">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="comentario">Comentario:</label>
+        <textarea id="comentario" name="comentario" rows="4" required></textarea>
+
+        <button type="submit">Enviar</button>
+    </form>
+</section>
+
+<style>
+    .flash-message {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 18px;
+        z-index: 1000;
+    }
+
+    .flash-message.success {
+        background-color: #4caf50;
+        color: #fff;
+    }
+
+    .flash-message.error {
+        background-color: #f44336;
+        color: #fff;
+    }
+</style>
+
+<script>
+    document.querySelector('.formulario-contacto').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const nombre = document.getElementById('nombre').value;
+        const email = document.getElementById('email').value;
+        const comentario = document.getElementById('comentario').value;
+
+        try {
+            const response = await fetch('/contacto/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nombre, email, comentario })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showFlashMessage('Mensaje enviado exitosamente', 'success');
+            } else {
+                showFlashMessage(result.message || 'Error al enviar el mensaje', 'error');
+            }
+        } catch (error) {
+            showFlashMessage('Error al enviar el mensaje', 'error');
+        }
+    });
+
+    function showFlashMessage(message, type) {
+        const flashMessage = document.createElement('div');
+        flashMessage.className = `flash-message ${type}`;
+        flashMessage.textContent = message;
+
+        document.body.appendChild(flashMessage);
+
+        setTimeout(() => {
+            flashMessage.remove();
+        }, 3000);
+    }
+</script>
